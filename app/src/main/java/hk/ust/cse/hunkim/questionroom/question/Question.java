@@ -1,5 +1,6 @@
 package hk.ust.cse.hunkim.questionroom.question;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -23,6 +24,8 @@ public class Question implements Comparable<Question> {
     private int echo;
     private int order;
     private boolean newQuestion;
+    //very basic functionality of responses -JT
+    private ArrayList<String> responses;
 
     public String getDateString() {
         return dateString;
@@ -58,6 +61,11 @@ public class Question implements Comparable<Question> {
         this.headLastChar = head.substring(head.length() - 1);
 
         this.timestamp = new Date().getTime();
+
+        //dummy beta for responses
+        responses = new ArrayList<String>();
+        this.responses.add("Response 1");
+        this.responses.add("Response 2");
     }
 
     /**
@@ -130,6 +138,10 @@ public class Question implements Comparable<Question> {
     public int getOrder() {
         return order;
     }
+
+    public String getResponse(int pos) {return responses.get(pos);}
+
+    public int getResponseCount() {return responses.size();}
 
     public boolean isNewQuestion() {
         return newQuestion;

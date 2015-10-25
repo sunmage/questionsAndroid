@@ -1,11 +1,14 @@
 package hk.ust.cse.hunkim.questionroom;
 
 import android.app.Activity;
+import android.database.DataSetObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -28,7 +31,7 @@ import java.util.Map;
  * instance of your list item mLayout and an instance your class that holds your data. Simply populate the view however
  * you like and this class will handle updating the list as the data changes.
  */
-public abstract class FirebaseListAdapter<T> extends BaseAdapter {
+public abstract class FirebaseListAdapter<T> extends BaseExpandableListAdapter {
 
     private Query mRef;
     private Class<T> mModelClass;
@@ -117,7 +120,7 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
                 T oldModel = mModelKeys.get(modelName);
                 mModels.remove(oldModel);
                 mModelKeys.remove(modelName);
-                notifyDataSetChanged();
+               // notifyDataSetChanged();
             }
 
             @Override
@@ -145,7 +148,7 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
                         mModels.add(nextIndex, newModel);
                     }
                 }
-                notifyDataSetChanged();
+                //notifyDataSetChanged();
             }
 
             @Override
@@ -163,24 +166,25 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
         mModelKeys.clear();
     }
 
+    //Overrides are modified for expandable. -JT
 
     @Override
-    public int getCount() {
+    public int getGroupCount() {
         return mModels.size();
     }
 
     @Override
-    public Object getItem(int i) {
+    public Object getGroup(int i) {
         return mModels.get(i);
     }
 
     @Override
-    public long getItemId(int i) {
+    public long getGroupId(int i) {
         return i;
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getGroupView(int i, boolean expanded, View view, ViewGroup viewGroup) {
         if (view == null) {
             view = mInflater.inflate(mLayout, viewGroup, false);
         }
@@ -199,6 +203,21 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
         return view;
     }
 
+    @Override
+    public View getChildView(int i, int j, boolean expanded, View view, ViewGroup viewGroup)
+    {
+        if (view == null) {
+            view = mInflater.inflate(mLayout, viewGroup, false);
+        }
+
+        // Let's get keys and models
+        T model = mModels.get(i);
+
+        // Call out to subclass to marshall this model into the provided view
+        populateChild(view, model, j);
+        return view;
+    }
+
     /**
      * Each time the data at the given Firebase location changes, this method will be called for each item that needs
      * to be displayed. The arguments correspond to the mLayout and mModelClass given to the constructor of this class.
@@ -209,6 +228,8 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
      * @param model The object containing the data used to populate the view
      */
     protected abstract void populateView(View v, T model);
+
+    protected abstract void populateChild(View v, T model, int j);
 
     protected abstract void sortModels(List<T> mModels);
 

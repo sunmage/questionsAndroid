@@ -1,5 +1,6 @@
 package hk.ust.cse.hunkim.questionroom;
 
+import android.app.ExpandableListActivity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -9,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,10 +24,10 @@ import hk.ust.cse.hunkim.questionroom.db.DBHelper;
 import hk.ust.cse.hunkim.questionroom.db.DBUtil;
 import hk.ust.cse.hunkim.questionroom.question.Question;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ExpandableListActivity {
 
     // TODO: change this to your own Firebase URL
-    private static final String FIREBASE_URL = "https://classquestion.firebaseio.com/";
+    private static final String FIREBASE_URL = "https://flickering-fire-3951.firebaseio.com/";
 
     private String roomName;
     private Firebase mFirebaseRef;
@@ -90,18 +92,18 @@ public class MainActivity extends ListActivity {
         super.onStart();
 
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
-        final ListView listView = getListView();
+        final ExpandableListView elistView = getExpandableListView();   //changed to expandable -JT
         // Tell our list adapter that we only want 200 messages at a time
         mChatListAdapter = new QuestionListAdapter(
                 mFirebaseRef.orderByChild("echo").limitToFirst(200),
                 this, R.layout.question, roomName);
-        listView.setAdapter(mChatListAdapter);
+        elistView.setAdapter(mChatListAdapter);
 
         mChatListAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-                listView.setSelection(mChatListAdapter.getCount() - 1);
+                elistView.setSelection(mChatListAdapter.getGroupCount() - 1);
             }
         });
 

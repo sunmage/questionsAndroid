@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.text.Html;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -38,6 +39,23 @@ public class QuestionListAdapter extends FirebaseListAdapter<Question> {
         this.activity = (MainActivity) activity;
     }
 
+    //finish implementing ExpandableListAdapter for responses
+    @Override
+    public int getChildrenCount(int i) {return ((Question) getGroup(i)).getResponseCount();}
+
+    @Override
+    public Object getChild(int i, int j){return ((Question) getGroup(i)).getResponse(j);}
+
+    @Override
+    public long getChildId(int i, int j) {return j;}
+
+    @Override
+    public boolean hasStableIds() {return true;}
+
+    @Override
+    public boolean isChildSelectable(int var1, int var2) {return false;}
+
+
     /**
      * Bind an instance of the <code>Chat</code> class to our view. This method is called by <code>FirebaseListAdapter</code>
      * when there is a data change, and we are given an instance of a View that corresponds to the layout that we passed
@@ -50,7 +68,7 @@ public class QuestionListAdapter extends FirebaseListAdapter<Question> {
     protected void populateView(View view, Question question) {
         DBUtil dbUtil = activity.getDbutil();
 
-        // Map a Chat object to an entry in our listview
+        // Map a Chat object to an entry in our expandablelistview
         int echo = question.getEcho();
         Button echoButton = (Button) view.findViewById(R.id.echo);
         echoButton.setText("" + echo);
@@ -79,23 +97,24 @@ public class QuestionListAdapter extends FirebaseListAdapter<Question> {
 
         msgString += "<B>" + question.getHead() + "</B>" + question.getDesc();
 
-        ((TextView) view.findViewById(R.id.head_desc)).setText(Html.fromHtml(msgString));
-        view.setOnClickListener(new View.OnClickListener() {
+
+
+        ((TextView) view.findViewById(R.id.ListHeader)).setText(Html.fromHtml(msgString));
+        /*view.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         MainActivity m = (MainActivity) view.getContext();
                                         m.updateEcho((String) view.getTag());
                                     }
                                 }
-
-        );
+        );*///commented out because we don't want it to upvote upon click, we want it to expand. -JT
 
         // check if we already clicked
         boolean clickable = !dbUtil.contains(question.getKey());
 
         echoButton.setClickable(clickable);
         echoButton.setEnabled(clickable);
-        view.setClickable(clickable);
+        //view.setClickable(clickable);
 
 
         // http://stackoverflow.com/questions/8743120/how-to-grey-out-a-button
@@ -110,6 +129,18 @@ public class QuestionListAdapter extends FirebaseListAdapter<Question> {
         view.setTag(question.getKey());  // store key in the view
     }
 
+    //create corresponding TextView for a response
+    @Override
+    protected void populateChild(View view, Question q, int j)
+    {
+        DBUtil dbUtil = activity.getDbutil();
+
+        String msgString = q.getResponse(j);
+
+        ((TextView) view.findViewById(R.id.childResponse)).setText(Html.fromHtml(msgString));
+
+    }
+
     @Override
     protected void sortModels(List<Question> mModels) {
         Collections.sort(mModels);
@@ -119,4 +150,5 @@ public class QuestionListAdapter extends FirebaseListAdapter<Question> {
     protected void setKey(String key, Question model) {
         model.setKey(key);
     }
+
 }

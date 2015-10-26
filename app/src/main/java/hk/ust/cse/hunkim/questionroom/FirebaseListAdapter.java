@@ -120,7 +120,7 @@ public abstract class FirebaseListAdapter<T> extends BaseExpandableListAdapter {
                 T oldModel = mModelKeys.get(modelName);
                 mModels.remove(oldModel);
                 mModelKeys.remove(modelName);
-               // notifyDataSetChanged();
+               notifyDataSetChanged();
             }
 
             @Override
@@ -148,7 +148,7 @@ public abstract class FirebaseListAdapter<T> extends BaseExpandableListAdapter {
                         mModels.add(nextIndex, newModel);
                     }
                 }
-                //notifyDataSetChanged();
+                notifyDataSetChanged();
             }
 
             @Override

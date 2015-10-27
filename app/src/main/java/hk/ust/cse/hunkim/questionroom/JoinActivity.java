@@ -14,7 +14,7 @@ import android.widget.TextView;
  * A login screen that offers login via email/password.
  */
 public class JoinActivity extends Activity {
-    public static final String ROOM_NAME = "comp3111";
+    public static final String ROOM_NAME = "Room_name";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
